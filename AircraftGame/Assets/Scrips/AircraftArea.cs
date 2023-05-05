@@ -101,7 +101,7 @@ namespace Aircraft
         /// <param name="randomize">If true, will pick a new NextCheckpointIndex before reset</param>
         //</summary>
 
-        void ResetAgentPosition(AircrtaftAgent agent,bool randomize = false) 
+        public void ResetAgentPosition(AircrtaftAgent agent,bool randomize = false) 
         {
 
             if (AircraftAgents == null) FindAircraftAgents();

@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 5289220713602685089}
   - component: {fileID: 8092248417266056901}
   - component: {fileID: 66563550253715348}
+  - component: {fileID: 8921252818581745388}
   m_Layer: 0
   m_Name: AirplanePlayer
   m_TagString: Untagged
@@ -155,7 +156,7 @@ Transform:
   m_Children:
   - {fileID: 6663372338977335250}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &9134836686691660375
 CapsuleCollider:
@@ -511,6 +512,20 @@ MonoBehaviour:
       m_Action: Pause Input
       m_Flags: 0
     m_Flags: 0
+--- !u!114 &8921252818581745388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1346374597451049135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  TakeActionsBetweenDecisions: 1
 --- !u!1 &3772272988142768412
 GameObject:
   m_ObjectHideFlags: 0
