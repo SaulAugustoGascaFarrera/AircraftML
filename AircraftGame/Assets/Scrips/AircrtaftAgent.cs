@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
@@ -146,6 +147,57 @@ namespace Aircraft
 
             
         }
+        /// <summary>
+        /// Collect observations used by agent to make decisions
+        /// </summary>
+        /// <param name="sensor">The vector sensor</param>
+        public override void CollectObservations(VectorSensor sensor)
+        {
+            //Observe aircraft velocity (1 vector3 = 3 values)
+            sensor.AddObservation(transform.InverseTransformDirection(rigidbody.velocity));
+
+            //where is the next checkpoint? (1 vector3 = 3 values)
+            sensor.AddObservation(VectorToNextCheckpoint());
+
+            //Orientation of the next checkpoint (1 vector3 = 3 values)
+            Vector3 nextCheckpointForward = area.Checkpoints[NextCheckpointIndex].transform.forward;
+            sensor.AddObservation(transform.InverseTransformDirection(nextCheckpointForward));
+
+
+            //Total observations = 3 + 3 + 3 = 9
+
+        }
+
+        /// <summary>
+        /// In this project, we only expect Heuristic to be used on AircraftPlayer
+        /// </summary>
+        /// <param name="actionsOut">Empty array</param>
+        public override void Heuristic(float[] actionsOut)
+        {
+            Debug.LogError("Heuristic() was called on " + gameObject.name + " Make sure only the aircarftplayer is set to Behavior type: Heuristic only.");
+        }
+
+        /// <summary>
+        /// Prevent the agent from moving and taking actions
+        /// </summary>
+        public void FreezeAgent()
+        {
+            Debug.Assert(area.trainingMode == false, "Freeze/Thaw not supported in training");
+            frozen = true;
+            rigidbody.Sleep();
+            trail.emitting = false;
+        }
+
+        /// <summary>
+        /// Resume agent movement amnd actions
+        /// </summary>
+        public void ThawAgent()
+        {
+            Debug.Assert(area.trainingMode == false, "Freeze/Thaw not supported in training");
+            frozen = false;
+            rigidbody.WakeUp();
+            
+        }
 
         /// <summary>
         /// Get a vector to next checkpoint the agent need to fly through
@@ -230,6 +282,64 @@ namespace Aircraft
             //set new rotation 
             transform.rotation = Quaternion.Euler(pitch, yaw, roll);
 
+        }
+
+        /// <summary>
+        /// React to entering a trigger
+        /// </summary>
+        /// <param name="other">the collider entered</param>
+        private void OnTriggerEnter(Collider other)
+        {
+            if(other.transform.CompareTag("checkpoint") && other.gameObject == area.Checkpoints[NextCheckpointIndex])
+            {
+                GotCheckpoint();
+            }
+        }
+
+
+        /// <summary>
+        /// React to collisions
+        /// </summary>
+        /// <param name="collision">Collision info</param>
+        private void OnCollisionEnter(Collision collision)
+        {
+            if(!collision.transform.CompareTag("agent"))
+            {
+                //We hit something that wasnt another agent
+                if(area.trainingMode)
+                {
+                    AddReward(-1f);
+                    EndEpisode();
+                }
+                else
+                {
+                    StartCoroutine(ExplosionReset());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Resets the aircraft to the most recent complete checkpoint
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator ExplosionReset()
+        {
+            FreezeAgent();
+
+            //Disable aircraft mesh object, enable explosion
+            meshObject.SetActive(false);
+            explosionEffect.SetActive(true);
+            yield return new WaitForSeconds(2f);
+
+            //Disable explosion, re enable aircraft mesh
+            meshObject.SetActive(true);
+            explosionEffect.SetActive(false);
+
+            //Reset position
+            area.ResetAgentPosition(agent: this);
+            yield return new WaitForSeconds(1f);
+            
+            ThawAgent();
         }
     }
 
