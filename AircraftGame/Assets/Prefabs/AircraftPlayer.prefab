@@ -381,8 +381,11 @@ GameObject:
   - component: {fileID: 4387534332165110702}
   - component: {fileID: 4529897629805031435}
   - component: {fileID: 5065587842469396620}
+  - component: {fileID: 7282484492203917278}
+  - component: {fileID: 3038738468359051725}
+  - component: {fileID: 3095772498450524652}
   m_Layer: 0
-  m_Name: AirplaneLearning
+  m_Name: AircraftPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -581,6 +584,165 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &7282484492203917278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6761817939456105723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 0
+    NumStackedVectorObservations: 1
+    VectorActionSize: 030000000300000002000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: AircraftPlayer
+  TeamId: 0
+  m_UseChildSensors: 1
+--- !u!114 &3038738468359051725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6761817939456105723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b3d7dbcfc61ec42bd11938bd710a50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
+  thrust: 100000
+  pitchSpeed: 100
+  yawSpeed: 100
+  rollSpeed: 100
+  boostMultiplier: 2
+  pitchInput:
+    m_Name: Pitch Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c21d1649-eb18-47ac-af38-af69f9158f18
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: WS
+      m_Id: 5c6a3755-5bdc-466b-b46e-76f59141d224
+      m_Path: 1DAxis
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Pitch Input
+      m_Flags: 4
+    - m_Name: negative
+      m_Id: 54219ab3-f417-4468-b644-fc6b29e38651
+      m_Path: <Keyboard>/s
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Pitch Input
+      m_Flags: 8
+    - m_Name: positive
+      m_Id: fb4f95c8-d0ed-4701-b04e-e3a69a2d4817
+      m_Path: <Keyboard>/w
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Pitch Input
+      m_Flags: 8
+    m_Flags: 0
+  yawInput:
+    m_Name: Yaw Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 7ca7ff20-b5b0-4f1d-b1dc-a8d27b37c7bb
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: AD
+      m_Id: 6e0ea020-c9a7-4fa8-8ef3-4c0456b602f0
+      m_Path: 1DAxis
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Yaw Input
+      m_Flags: 4
+    - m_Name: negative
+      m_Id: 2a7dcefa-eb32-478c-baaf-fa9cb43ec087
+      m_Path: <Keyboard>/a
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Yaw Input
+      m_Flags: 8
+    - m_Name: positive
+      m_Id: a3cbbf6b-bd9f-4fc4-b06f-a7092b6e21d6
+      m_Path: <Keyboard>/d
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Yaw Input
+      m_Flags: 8
+    m_Flags: 0
+  boostInput:
+    m_Name: Boost Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 22822c7a-8eb2-46ff-a7d6-eff5c3e27264
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 5e94b245-e083-49db-a0c1-9f58931a70fa
+      m_Path: <Keyboard>/space
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Boost Input
+      m_Flags: 0
+    m_Flags: 0
+  pauseInput:
+    m_Name: Pause Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 9b9a72cc-116a-420b-9c96-26af4308c6a2
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 0458604a-5eff-4bc2-8675-37b128cc8de4
+      m_Path: <Keyboard>/escape
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Pause Input
+      m_Flags: 0
+    m_Flags: 0
+--- !u!114 &3095772498450524652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6761817939456105723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  TakeActionsBetweenDecisions: 1
 --- !u!1 &7514970544748797548
 GameObject:
   m_ObjectHideFlags: 0
