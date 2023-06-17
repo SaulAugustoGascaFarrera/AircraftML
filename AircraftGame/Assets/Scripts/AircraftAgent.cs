@@ -13,12 +13,31 @@ namespace Aircraft
         public float yawSpeed = 100f;
         public float rollSpeed = 100f;
         public float boostMultiplier = 2f;
+
+        [Header("Explosion Stuff")]
+        [Tooltip("The aircraft mesh that will dissapear on explosion")]
+        public GameObject meshObject;
+
+        [Tooltip("The Game Object of the particle explosion effect")]
+        public GameObject explosionEffect;
+
+        [Header("Training")]
+        [Tooltip("Number of steps to time out after in training")]
+        public int stepTimeout = 300;
+
+
         public int NextCheckpointIndex { get; set; }
 
         //Component to keep track of
         AircraftArea area;
         new Rigidbody rigidbody;
         TrailRenderer trail;
+
+        //When the next step timeout will be during training
+        float nextStepTimeout;
+
+        //Whewter the aircraft is frozen (intentionally not flying)
+        bool frozen = false;
 
         //Control
         float pitchChange = 0f;
@@ -39,6 +58,10 @@ namespace Aircraft
             area = GetComponentInParent<AircraftArea>();
             rigidbody = GetComponent<Rigidbody>();
             trail = GetComponent<TrailRenderer>();
+
+            //Override the max step set in the inspector
+            //Max 5000 steps if training, infinite steps if racing
+            MaxStep = area.trainingMode ? 5000 : 0;
         }
 
         /// <summary>
@@ -47,6 +70,8 @@ namespace Aircraft
         /// <param name="vectorAction">The chosen actions</param>
         public override void OnActionReceived(float[] vectorAction)
         {
+            if (frozen) return;
+
             //Read Values for  pitch and yaw
             pitchChange = vectorAction[0]; //up or none
             if (pitchChange == 2) pitchChange = -1; //down 
@@ -59,7 +84,58 @@ namespace Aircraft
             if (boost && !trail.emitting) trail.Clear();
             trail.emitting = boost;
 
+            
+
             ProcessMovement();
+
+            if(area.trainingMode)
+            {
+                //small negative reward every step
+                AddReward(-1f / MaxStep);
+
+                //Make sure we havent  run out of time if training
+                if(StepCount > nextStepTimeout)
+                {
+                    AddReward(-0.5f);
+                    EndEpisode();
+                }
+
+                Vector3 localCheckpointDir = VectorToNextCheckpoint();
+
+                if (localCheckpointDir.magnitude < Academy.Instance.EnvironmentParameters.GetWithDefault("checkpoint_radius", 0f))
+                {
+                    GotCheckpoint();
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gets a vector to the next checkpoint the agent needs to fly through
+        /// </summary>
+        /// <returns>A llocal space vector</returns>
+        Vector3 VectorToNextCheckpoint()
+        {
+            Vector3 nextCheckpointDir = area.Checkpoints[NextCheckpointIndex].transform.position - transform.position;
+            Vector3 localCheckpointDir = transform.InverseTransformDirection(nextCheckpointDir);
+            return localCheckpointDir;
+            
+        }
+
+
+        /// <summary>
+        /// Called when agent flies through the correct checkpoint
+        /// </summary>
+        void GotCheckpoint()
+        {
+            //Next Checkpoint reached,updated
+            NextCheckpointIndex = (NextCheckpointIndex + 1) % area.Checkpoints.Count;
+
+            if(area.trainingMode)
+            {
+                AddReward(0.5f);
+                nextStepTimeout = StepCount + stepTimeout;
+            }
         }
 
         /// <summary>
